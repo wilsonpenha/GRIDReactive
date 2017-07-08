@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BEGIN_COPYRIGHT
+
+Licensed Materials - Property of IBM
+
+5727-I17
+(C) Copyright IBM Corp. 2001, 2014 All Rights Reserved.
+
+US Government Users Restricted Rights - Use, duplication or
+disclosure restricted by GSA ADP Schedule Contract with
+IBM Corp.
+
+END_COPYRIGHT -->
+
+<!-- ====================================================================== -->
+<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.5 or above.        -->
+<!-- ====================================================================== -->
+
+<project name="GRIDReactive" default="package" basedir=".">
+
+  <!-- ====================================================================== -->
+  <!-- Help target                                                            -->
+  <!-- ====================================================================== -->
+
+  <target name="help">
+    <echo message="Please run: $ant -projecthelp"/>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Build environment properties                                           -->
+  <!-- ====================================================================== -->
+
+  <property name="template.build.finalName" value="GRIDReactive-0.1-0-SNAPSHOT"/>
+  <property name="template.build.dir" value="target"/>
+  <property name="template.build.outputDir" value="${template.build.dir}/classes"/>
+  <property name="template.build.srcDir.0" value="src"/>
+  <property name="template.reporting.outputDirectory" value="${template.build.dir}/site"/>
+
+  <property name="template.repo.local" value="./lib"/>
+  <property name="template.settings.offline" value="false"/>
+  <property name="template.settings.interactiveMode" value="true"/>
+
+  <!-- ====================================================================== -->
+  <!-- Defining classpaths                                                    -->
+  <!-- ====================================================================== -->
+
+  <path id="build.classpath">
+    <pathelement location="${template.repo.local}/commons-codec-1.4.jar"/>
+    <pathelement location="${template.repo.local}/commons-httpclient-3.1.jar"/>
+    <pathelement location="${template.repo.local}/commons-io-2.4.jar"/>
+    <pathelement location="${template.repo.local}/commons-lang-2.6.jar"/>
+    <pathelement location="${template.repo.local}/commons-logging-1.1.1.jar"/>
+    <pathelement location="${template.repo.local}/java-json.jar"/>
+  </path>
+
+  <!-- ====================================================================== -->
+  <!-- Cleaning up target                                                     -->
+  <!-- ====================================================================== -->
+
+  <target name="clean" description="Clean the output directory">
+    <delete dir="${template.build.dir}"/>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Compilation target                                                     -->
+  <!-- ====================================================================== -->
+
+  <target name="compile" description="Compile the code">
+    <mkdir dir="${template.build.outputDir}"/>
+    <javac destdir="${template.build.outputDir}"
+           nowarn="true"
+           debug="true"
+           optimize="false"
+           deprecation="true"
+           target="1.8"
+           verbose="false"
+           fork="false"
+           source="1.8">
+      <src>
+        <pathelement location="${template.build.srcDir.0}"/>
+      </src>
+      <classpath refid="build.classpath"/>
+    </javac>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Manifest target                                                        -->
+  <!-- ====================================================================== -->
+
+  <target name="manifest" depends="compile"
+          description="Generate the plugin manifest">
+      <manifest file="target/MANIFEST.MF">
+        <attribute name="Specification-Title" value="GRIDReactive"/>
+        <attribute name="Specification-Version" value="0.1.0"/>
+        <attribute name="Specification-Vendor" value="WorkDay"/>
+        <attribute name="Implementation-Title" value="GRIDReactive"/>
+        <attribute name="Implementation-Version" value="0.1.0"/>
+        <attribute name="Implementation-Vendor" value="WorkDay"/>
+        <attribute name="Implementation-Vendor-Id"
+                   value="com.ibm.dataexplorer.converter"/>
+        <attribute name="Built-By" value="${user.name}"/>
+      </manifest>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Jar target                                                             -->
+  <!-- ====================================================================== -->
+
+  <target name="jar" depends="compile,manifest" description="Build a deployable jar">
+    <jar destfile="target/grid_reactive-0.1.0.jar"
+         basedir="target/classes">
+      <manifest>
+        <attribute name="Specification-Title" value="GRIDReactive"/>
+        <attribute name="Specification-Version" value="0.1.0"/>
+        <attribute name="Specification-Vendor" value="WorkDay"/>
+        <attribute name="Implementation-Title" value="GRIDReactive"/>
+        <attribute name="Implementation-Version" value="0.1.0"/>
+        <attribute name="Implementation-Vendor" value="WorkDay"/>
+        <attribute name="Implementation-Vendor-Id"
+                   value="com.ibm.dataexplorer.converter"/>
+        <attribute name="Built-By" value="${user.name}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- ====================================================================== -->
+  <!-- Package target                                                         -->
+  <!-- ====================================================================== -->
+
+  <target name="package" depends="compile,manifest,jar" description="Package the application">
+
+  	<mkdir dir="target/distrib-zip/" />
+    <copy todir="target/distrib-zip/lib">
+        <fileset dir="lib" includes="**/*.*" />
+   	</copy>
+
+    <copy todir="target/distrib-zip">
+      <fileset dir="src" includes="**/*.*" />
+      <fileset dir="bin" includes="**/*.*" />
+      <fileset dir="." includes="**/*.sh" />
+    </copy>
+
+    <zip destfile="target/grid_reactive-0.1.0-distrib.zip"
+         basedir="target/distrib-zip"/>
+  </target>
+
+</project>
